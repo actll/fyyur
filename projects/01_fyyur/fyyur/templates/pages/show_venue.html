@@ -1,6 +1,7 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Venue Search{% endblock %}
 {% block content %}
+
 <div class="row">
 	<div class="col-sm-6">
 		<h1 class="monospace">
@@ -42,6 +43,21 @@
 		</p>
 		{% endif %}
 	</div>
+
+	<div>
+		<a href="/venues/{{ venue.id }}/edit">
+			<button class="btn btn-default btn-sm">
+				Edit
+			</button>
+		</a>
+		<button
+			id="delete-venue"
+			data-id="{{ venue.id }}"
+			class="btn btn-default btn-sm" >
+			Delete
+		</button>
+	</div>
+
 	<div class="col-sm-6">
 		<img src="{{ venue.image_link }}" alt="Venue Image" />
 	</div>
@@ -74,6 +90,22 @@
 		{% endfor %}
 	</div>
 </section>
+
+<script>
+	const deleteBtn = document.getElementById('delete-venue');
+	deleteBtn.onclick = function (e){
+		console.log("Delete event: ", e);
+		const venueId = e.target.dataset.id;
+		console.log("before fetch");
+		fetch('/venue/'+ venueId , {
+			method: 'DELETE'
+		}).then(function () {
+                window.location.href = `/venues`;
+            }).catch(function (e) {
+                console.log('error', e)
+            })
+	}
+</script>
 
 {% endblock %}
 

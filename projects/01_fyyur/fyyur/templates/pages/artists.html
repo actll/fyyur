@@ -2,14 +2,17 @@
 {% block title %}Fyyur | Artists{% endblock %}
 {% block content %}
 <ul class="items">
-	{% for artist in artists %}
+{% for artist in artists %}
+
 	<li>
 		<a href="/artists/{{ artist.id }}">
+		
 			<i class="fas fa-users"></i>
 			<div class="item">
 				<h5>{{ artist.name }}</h5>
-			</div>
-		</a>
+				
+		</div>
+		<a href="/artists/{{ artist.id }}/edit"><button class="btn btn-default btn-sm">Change an artist</button></a>
 	</li>
 	{% endfor %}
 </ul>
