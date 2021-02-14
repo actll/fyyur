@@ -69,8 +69,8 @@ def venues():
   data = db.session.query(Venue).all()
   print(data)
 
-  return render_template('pages/venues.html', areas=data)
-  '''
+  #return render_template('pages/venues.html', areas=data)
+  
   all_areas = Venue.query.with_entities(func.count(Venue.id), Venue.city, Venue.state, Venue.name).group_by(Venue.city, Venue.state, Venue.name).all()
   data=[]
   
@@ -89,10 +89,7 @@ def venues():
       "state":area.state,
       #"venues":area.venues
     })
-  print('wtf')
   return render_template('pages/venues.html', areas=data)
-  #print (venue_locations)
-  '''
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -217,35 +214,18 @@ def create_venue_submission():
     db.session.close()
   return render_template('pages/home.html')
 
-'''
-@app.route('/venues/<int:venue_id>', methods=['DELETE'])
+@app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
-  print("start delete")
-  error = False
   try:
-    #if not venue:
-    #  flash('No venue to delete')
-    #  return redirect('/venues')
-    print ("in try block")
-    deleteItem = Venue.query.get(venue_id)
-    db.session.delete(deleteItem)
+    Venue.query.filter_by(id=venue_id).delete()
     db.session.commit()
-  except():
-    error = True
+  except:
     db.session.rollback()
-    print(sys.exc_info())
+    return jsonify({ 'success': False })
   finally:
     db.session.close()
-  if error:
-    flash('an error occured and Venue ' + {deleteItem} + ' was not deleted')
-  if not error:
-    flash('Venue ' + {deleteItem }+ ' was successfully deleted')
-    
-  return render_template('pages/venues.html')
+  return jsonify({ 'success': True })
 
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-'''
 #  Artists
 #  ----------------------------------------------------------------
 @app.route('/artists')
@@ -321,46 +301,13 @@ def show_artist(artist_id):
   #data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
   return render_template('pages/show_artist.html', artist=data)
 
-'''
-  data3={
-    "id": 6,
-    "name": "The Wild Sax Band",
-    "genres": ["Jazz", "Classical"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "432-325-5432",
-    "seeking_venue": False,
-    "image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-    "past_shows": [],
-    "upcoming_shows": [{
-      "venue_id": 3,
-      "venue_name": "Park Square Live Music & Coffee",
-      "venue_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-01T20:00:00.000Z"
-    }, {
-      "venue_id": 3,
-      "venue_name": "Park Square Live Music & Coffee",
-      "venue_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-08T20:00:00.000Z"
-    }, {
-      "venue_id": 3,
-      "venue_name": "Park Square Live Music & Coffee",
-      "venue_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-15T20:00:00.000Z"
-    }],
-    "past_shows_count": 0,
-    "upcoming_shows_count": 3,
-  }'''
-  #data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
-  #return render_template('pages/show_artist.html', artist=data)
-
 #  Update
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist(artist_id):
   form = ArtistForm()
   #artist=Artist.query.get(artist_id)
-  artist = db.session.query(Artist).filter_by(Artist.id=artist_id).first()
+  artist = db.session.query.get(artist_id)
   if artist is None:
     flash('Artist not found!', 'error')
     return redirect('/artists')
@@ -378,29 +325,15 @@ def edit_artist(artist_id):
     "facebook_link": artist.facebook_link,
     "website": artist.website
     }
-    return render_template('forms/edit_artist.html', form=form, artist=artist_data)
+    db.session.add(artist)
+    db.session.commit()
+    db.session.close()
+    #return render_template('forms/edit_artist.html', form=form, artist=artist_data)
+    
+    return redirect(url_for('show_artist', artist_id=artist_id))
 
 
-  '''
-  artist = {
-    id=artist.id
-    name = artist.name
-  }'''
-  '''
-  artist={
-    "id": 4,
-    "name": "Guns N Petals",
-    "genres": ["Rock n Roll"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "326-123-5000",
-    "website": "https://www.gunsnpetalsband.com",
-    "facebook_link": "https://www.facebook.com/GunsNPetals",
-    "seeking_venue": True,
-    "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-    "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-  }
-  '''
+
   # TODO: populate form with fields from artist with ID <artist_id>
   #return render_template('forms/edit_artist.html', form=form, artist=artist)
   
@@ -413,8 +346,8 @@ def create_artist_form(artist_id):
 def edit_artist_submission(artist_id):
   # TODO: take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
-  artist = db.session.query(Artist).filter(Artist.id == artist_id).first()
-  '''form_data = request.form
+ artist = Artist.query.get(artist_id)
+  form_data = request.form
   artist.name = form_data['name']
   artist.city = form_data['city']
   artist.state = form_data['state']
@@ -424,7 +357,7 @@ def edit_artist_submission(artist_id):
   artist.facebook_link = form_data['facebook_link']
   artist.website = form_data['website']
   artist.seeking_venue = True if form_data['seeking_venue']=='true' else False
-  artist.seeking_description = form_data['seeking_description']'''
+  artist.seeking_description = form_data['seeking_description']
   db.session.commit()
 
   #return redirect(url_for('show_artist', artist_id=artist_id))

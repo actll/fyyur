@@ -12,6 +12,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import aliased
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, String, Integer, create_engine, func
+from config import SQLALCHEMY_DATABASE_URI # Import local database URI from Config File
+
 
 #database_name = "fyyur"
 #database_path = "postgres:/?{}/{}".format('localhosr:5432', database_name)
@@ -25,6 +27,8 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 #db = SQLAlchemy()
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 
 class Venue(db.Model):
     __tablename__ = 'Venue'
@@ -62,7 +66,7 @@ class Artist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    genres = db.Column(db.ARRAY(db.String))
+    genres = db.Column(db.ARRAY(db.String()))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
@@ -79,6 +83,7 @@ class Artist(db.Model):
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.__
 class Show(db.Model):
     __tablename__ = 'Show'
+    
     id = db.Column(db.Integer, primary_key=True)
     artist_id = db.Column(db.Integer, db.ForeignKey(
         'Artist.id'), nullable=False)
