@@ -7,7 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 database_name = 'trivia'
 #database_path = "postgresql://{}/{}".format('arthurcutillo@localhost:5432', database_name)
-database_path = 'postgresql://arthurcutillo@localhost:5432/trivia'
+database_path = 'postgresql://****localhost:5432/trivia'
 
 db = SQLAlchemy()
 
